@@ -47,7 +47,6 @@ class PerformanceCategoryRenderer extends CategoryRenderer {
   _renderOpportunity(audit, index, scale) {
     const oppTmpl = this.dom.cloneTemplate('#tmpl-lh-opportunity', this.templateContext);
     const element = this.populateAuditValues(audit, index, oppTmpl);
-    element.classList.add(`lh-audit--${Util.calculateRating(audit.result.score)}`);
     element.id = audit.result.id;
 
     const details = audit.result.details;
@@ -57,18 +56,16 @@ class PerformanceCategoryRenderer extends CategoryRenderer {
       return element;
     }
 
-    const wastedEl = this.dom.find('.lh-audit__display-text', element);
-    if (audit.result.scoreDisplayMode !== 'error') {
-      const sparklineWidthPct = `${summaryInfo.wastedMs / scale * 100}%`;
-      this.dom.find('.lh-sparkline__bar', element).style.width = sparklineWidthPct;
-      wastedEl.textContent = Util.formatSeconds(summaryInfo.wastedMs, 0.01);
-    }
+    // Overwrite the displayValue with opportunity's wastedMs
+    const displayEl = this.dom.find('.lh-audit__display-text', element);
+    const sparklineWidthPct = `${summaryInfo.wastedMs / scale * 100}%`;
+    this.dom.find('.lh-sparkline__bar', element).style.width = sparklineWidthPct;
+    displayEl.textContent = Util.formatSeconds(summaryInfo.wastedMs, 0.01);
 
-    if (audit.result.displayValue) {
-      const displayValue = Util.formatDisplayValue(audit.result.displayValue);
-      this.dom.find('.lh-load-opportunity__sparkline', element).title = displayValue;
-      wastedEl.title = displayValue;
-    }
+    // Set [title] tooltips
+    const displayValue = Util.formatDisplayValue(audit.result.displayValue);
+    this.dom.find('.lh-load-opportunity__sparkline', element).title = displayValue;
+    displayEl.title = displayValue;
 
     return element;
   }
