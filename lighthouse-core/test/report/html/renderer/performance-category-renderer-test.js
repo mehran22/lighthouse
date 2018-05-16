@@ -105,8 +105,7 @@ describe('PerfCategoryRenderer', () => {
       score: 0,
       group: 'load-opportunities',
       result: {
-        score: null, scoreDisplayMode: 'error', errorMessage: 'Yikes!!', description: 'Bug #2',
-        details: {summary: {wastedMs: 3223}},
+        score: null, scoreDisplayMode: 'error', errorMessage: 'Yikes!!', title: 'Bug #2',
       },
     };
 
@@ -123,7 +122,7 @@ describe('PerfCategoryRenderer', () => {
       group: 'load-opportunities',
       result: {
         score: 0, scoreDisplayMode: 'numeric',
-        rawValue: 100, explanation: 'Yikes!!', description: 'Bug #2',
+        rawValue: 100, explanation: 'Yikes!!', title: 'Bug #2',
       },
     };
 
@@ -163,7 +162,7 @@ describe('PerfCategoryRenderer', () => {
         group: 'load-opportunities',
         result: {
           error: true, score: 0,
-          rawValue: 100, debugString: 'Yikes!!', description: 'Bug #2',
+          rawValue: 100, debugString: 'Yikes!!', title: 'Bug #2',
         },
       };
       const wastedMs = renderer._getWastedMs(auditWithDebug);
