@@ -43,10 +43,10 @@ class CategoryRenderer {
 
   /**
    * Populate an DOM tree with audit details. Used by renderAudit and renderOpportunity
-   * @param {!ReportRenderer.AuditJSON} audit
+   * @param {AuditJSON} audit
    * @param {number} index
-   * @param {!DocumentFragment} tmpl
-   * @return {!Element}
+   * @param {DocumentFragment} tmpl
+   * @return {Element}
    */
   populateAuditValues(audit, index, tmpl) {
     const auditEl = this.dom.find('.lh-audit', tmpl);
