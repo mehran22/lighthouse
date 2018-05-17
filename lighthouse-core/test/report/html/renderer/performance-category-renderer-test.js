@@ -111,9 +111,9 @@ describe('PerfCategoryRenderer', () => {
 
     const fakeCategory = Object.assign({}, category, {auditRefs: [auditWithDebug]});
     const categoryDOM = renderer.render(fakeCategory, sampleResults.categoryGroups);
-    const debugEl = categoryDOM.querySelector('.lh-audit--load-opportunity .lh-debug');
-    assert.ok(debugEl, 'did not render debug');
-    assert.ok(/Yikes!!/.test(debugEl.textContent));
+    const tooltipEl = categoryDOM.querySelector('.lh-audit--load-opportunity .lh-debug');
+    assert.ok(tooltipEl, 'did not render debug');
+    assert.ok(/Yikes!!/.test(tooltipEl.textContent));
   });
 
   it('renders performance opportunities\' explanation', () => {
@@ -129,9 +129,9 @@ describe('PerfCategoryRenderer', () => {
     const fakeCategory = Object.assign({}, category, {auditRefs: [auditWithDebug]});
     const categoryDOM = renderer.render(fakeCategory, sampleResults.categoryGroups);
 
-    const debugEl = categoryDOM.querySelector('.lh-audit--load-opportunity .lh-debug');
-    assert.ok(debugEl, 'did not render debug');
-    assert.ok(/Yikes!!/.test(debugEl.textContent));
+    const tooltipEl = categoryDOM.querySelector('.lh-audit--load-opportunity .lh-debug');
+    assert.ok(tooltipEl, 'did not render debug');
+    assert.ok(/Yikes!!/.test(tooltipEl.textContent));
   });
 
   it('renders the failing diagnostics', () => {

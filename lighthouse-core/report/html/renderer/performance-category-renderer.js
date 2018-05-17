@@ -61,7 +61,7 @@ class PerformanceCategoryRenderer extends CategoryRenderer {
       return element;
     }
     const summaryInfo = /** @type {OpportunitySummary} */ (details.summary);
-    if (!summaryInfo || !summaryInfo.wastedMs) {
+    if (!summaryInfo || !summaryInfo.wastedMs || audit.result.scoreDisplayMode === 'error') {
       return element;
     }
 
