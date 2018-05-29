@@ -1,6 +1,7 @@
 // generated on 2016-03-19 using generator-chrome-extension 0.5.4
 
 'use strict';
+const fs = require('fs');
 const del = require('del');
 const gutil = require('gulp-util');
 const runSequence = require('run-sequence');
@@ -19,6 +20,12 @@ const LighthouseRunner = require('../lighthouse-core/runner');
 const pkg = require('../package.json');
 
 const distDir = 'dist';
+
+// HACK: patch astw, see https://github.com/GoogleChrome/lighthouse/issues/5152
+const ASTW_PATH = require.resolve('astw/index.js');
+const astwOriginalContent = fs.readFileSync(ASTW_PATH, 'utf8');
+const astwPatchedContent = astwOriginalContent.replace(/ecmaVersion: .* 8,/, 'ecmaVersion: 2018,');
+fs.writeFileSync(ASTW_PATH, astwPatchedContent);
 
 const VERSION = pkg.version;
 const COMMIT_HASH = require('child_process')

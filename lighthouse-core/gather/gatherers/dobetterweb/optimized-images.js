@@ -185,8 +185,7 @@ class OptimizedImages extends Gatherer {
         }
 
         /** @type {LH.Artifacts.OptimizedImage} */
-        // @ts-ignore TODO(bckenny): fix browserify/Object.spread. See https://github.com/GoogleChrome/lighthouse/issues/5152
-        const image = Object.assign({failed: false}, stats, record);
+        const image = {failed: false, ...stats, ...record};
         results.push(image);
       } catch (err) {
         // Track this with Sentry since these errors aren't surfaced anywhere else, but we don't
