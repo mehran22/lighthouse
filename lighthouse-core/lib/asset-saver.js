@@ -200,6 +200,7 @@ async function prepareAssets(artifacts, audits) {
  * @return {IterableIterator<string>}
  */
 function* traceJsonGenerator(traceData) {
+  const EVENTS_PER_ITERATION = 500;
   const keys = Object.keys(traceData);
 
   yield '{\n';
@@ -211,9 +212,18 @@ function* traceJsonGenerator(traceData) {
     // Emit first item manually to avoid a trailing comma.
     const firstEvent = eventsIterator.next().value;
     yield `  ${JSON.stringify(firstEvent)}`;
+
+    let eventsRemaining = EVENTS_PER_ITERATION;
+    let eventsJSON = '';
     for (const event of eventsIterator) {
-      yield `,\n  ${JSON.stringify(event)}`;
+      eventsJSON += `,\n  ${JSON.stringify(event)}`;
+      if (--eventsRemaining === 0) {
+        yield eventsJSON;
+        eventsRemaining = EVENTS_PER_ITERATION;
+        eventsJSON = '';
+      }
     }
+    yield eventsJSON;
   }
   yield '\n]';
 
