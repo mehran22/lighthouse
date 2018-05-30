@@ -17,23 +17,12 @@ const Util = require('../report/html/renderer/util.js');
 const URL = /** @type {!Window["URL"]} */ (typeof self !== 'undefined' && self.URL) ||
     require('url').URL;
 
-const tldPlusOne = {
-  ar: ['com', 'edu', 'gob', 'int', 'mil', 'mar', 'net', 'org', 'tur', 'musica'],
-  at: ['co', 'or', 'priv', 'ac'],
-  fr: ['avocat', 'aeroport', 'veterinaire'],
-  nz: ['ac', 'co', 'school', 'cri', 'govt', 'mil', 'parliament'],
-  il: ['org', 'k12', 'gov', 'muni', 'idf'],
-  ru: ['com', 'edu', 'gob', 'int', 'mil', 'mar', 'net', 'org', 'tur', 'musica'],
-  za: ['ac', 'gov', 'law', 'mil', 'nom', 'school', 'net'],
-  kr: ['ac', 'co', 'es', 'go', 'hs', 'kg', 'mil', 'ms', 'ne', 'or', 'pe', 're', 'sc', 'busan',
-    'chungbuk', 'chungnam', 'daegu', 'daejeon', 'gangwon', 'gwangju', 'gyeongbuk', 'gyeonggi',
-    'gyeongnam', 'incheon', 'jeju', 'jeonbuk', 'jeonnam', 'seoul', 'ulsan'],
-  es: ['org', 'gob'],
-  tr: ['com', 'info', 'biz', 'net', 'org', 'web', 'gen', 'tv', 'av', 'dr', 'bbs', 'name', 'tel',
-    'gov', 'bel', 'pol', 'mil', 'k12', 'edu', 'kep', 'nc', 'gov.nc'],
-  ua: ['gov', 'com', 'in', 'org', 'net', 'edu'],
-  uk: ['co', 'org', 'me', 'ltd', 'plc', 'net', 'sch', 'ac', 'gov', 'mod', 'mil', 'nhs', 'police'],
-};
+const tldPlusOneRegex = new RegExp(`\\.(com|co|gov|org|ac|or|edu|go|nic|in|gouv|gob|web|spb|net|` +
+  `wi|blog|ne|jus|kiev|qc|ca|bel|on|tokyo|gen|ga|bc|nj|oh|nhs|nh|nc|res|govt|gr|dn|re|ed|te|` +
+  `kharkov|mo|poznan|idv|gc|mp|if|mn|pp|dp|asso|sh|gv|fl|ab|zp|pa|ia|gub|ny|ma|va|waw|kanagawa|` +
+  `lviv|mi|osaka|od|krakow|saitama|mil|ks|wroc|kr|il|pro|pe|seoul|cn|sc|police|aichi|rnu|med|msk|` +
+  `my|milano|chiba|pl|mk|biz|toscana|opole|md|coop|sumy|info|shizuoka|aeroport|rv|k12|cv|tx|` +
+  `kommune|ct|vn|ind)`);
 
 /**
  * There is fancy URL rewriting logic for the chrome://settings page that we need to work around.
@@ -48,31 +37,6 @@ function rewriteChromeInternalUrl(url) {
   //   https://github.com/GoogleChrome/lighthouse/pull/3941#discussion_r154026009
   if (url.endsWith('/')) url = url.replace(/\/$/, '');
   return url.replace(/^chrome:\/\/chrome\//, 'chrome://');
-}
-
-/**
- * Checks if an url contains a TLD plus one domain
- *
- * @param {string} url
- * @return {boolean}
- */
-function isTldPlusDomain(url) {
-  try {
-    const parsedUrl = new URL(url);
-    if (!parsedUrl.hostname) {
-      return false;
-    }
-
-    const tld = parsedUrl.hostname.split('.').slice(-1)[0];
-    if (!tldPlusOne[tld]) {
-      return false;
-    }
-
-    const tldPlusOneRegex = new RegExp(`\\.(${tldPlusOne[tld].join('|')})\\.${tld}`);
-    return tldPlusOneRegex.test(url);
-  } catch (err) {
-    return false;
-  }
 }
 
 class URLShim extends URL {
@@ -131,6 +95,25 @@ class URLShim extends URL {
   }
 
   /**
+   * Gets the tld of a domain
+   *
+   * @param {string} hostname
+   * @return {string} tld
+   */
+  static getTld(hostname) {
+    const tld = hostname.split('.').slice(-1)[0];
+
+    const tldRegex = new RegExp(`${tldPlusOneRegex.source}\\.${tld}$`);
+    const tldMatch = hostname.match(tldRegex);
+
+    if (!tldMatch) {
+      return tld;
+    }
+
+    return `${tldMatch[1]}.${tld}`;
+  }
+
+  /**
    * Check if rootDomains matches
    *
    * @param {string} urlA
@@ -150,11 +133,12 @@ class URLShim extends URL {
       return false;
     }
 
-    const isTldPlusOneA = isTldPlusDomain(urlA);
-    const isTldPlusOneB = isTldPlusDomain(urlB);
+    const tldA = URLShim.getTld(urlAInfo.hostname);
+    const tldB = URLShim.getTld(urlBInfo.hostname);
 
-    const urlARootDomain = urlAInfo.hostname.split('.').slice(isTldPlusOneA ? -3 : -2).join('.');
-    const urlBRootDomain = urlBInfo.hostname.split('.').slice(isTldPlusOneB ? -3 : -2).join('.');
+    // get the string before the tld
+    const urlARootDomain = urlAInfo.hostname.replace(new RegExp(`\\.${tldA}$`), '').split('.').splice(-1)[0];
+    const urlBRootDomain = urlBInfo.hostname.replace(new RegExp(`\\.${tldB}$`), '').split('.').splice(-1)[0];
 
     return urlARootDomain === urlBRootDomain;
   }
