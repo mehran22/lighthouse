@@ -196,7 +196,7 @@ async function prepareAssets(artifacts, audits) {
 /**
  * Generates a JSON representation of traceData line-by-line to avoid OOM due to very large traces.
  * COMPAT: As of Node 9, JSON.parse/stringify can handle 256MB+ strings. Once we drop support for
- * Node 8, we can 'revert' PR #2593
+ * Node 8, we can 'revert' PR #2593. See https://stackoverflow.com/a/47781288/89484
  * @param {LH.Trace} traceData
  * @return {IterableIterator<string>}
  */
