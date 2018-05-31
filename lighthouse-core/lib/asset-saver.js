@@ -218,7 +218,8 @@ function* traceJsonGenerator(traceData) {
     let eventsJSON = '';
     for (const event of eventsIterator) {
       eventsJSON += `,\n  ${JSON.stringify(event)}`;
-      if (--eventsRemaining === 0) {
+      eventsRemaining--;
+      if (eventsRemaining === 0) {
         yield eventsJSON;
         eventsRemaining = EVENTS_PER_ITERATION;
         eventsJSON = '';
