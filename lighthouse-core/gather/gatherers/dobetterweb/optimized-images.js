@@ -198,8 +198,7 @@ class OptimizedImages extends Gatherer {
         });
 
         /** @type {LH.Artifacts.OptimizedImageError} */
-        // @ts-ignore TODO(bckenny): see above browserify/Object.spread TODO.
-        const imageError = Object.assign({failed: true, errMsg: err.message}, record);
+        const imageError = {failed: true, errMsg: err.message, ...record};
         results.push(imageError);
       }
     }
