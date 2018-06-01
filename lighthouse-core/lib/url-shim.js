@@ -17,13 +17,10 @@ const Util = require('../report/html/renderer/util.js');
 const URL = /** @type {!Window["URL"]} */ (typeof self !== 'undefined' && self.URL) ||
     require('url').URL;
 
-const tldPlusOneRegex = new RegExp(`\\.(com|co|gov|org|ac|or|edu|go|nic|in|gouv|gob|web|spb|net|` +
-  `wi|blog|ne|jus|kiev|qc|ca|bel|on|tokyo|gen|ga|bc|nj|oh|nhs|nh|nc|res|govt|gr|dn|re|ed|te|` +
-  `kharkov|mo|poznan|idv|gc|mp|if|mn|pp|dp|asso|sh|gv|fl|ab|zp|pa|ia|gub|ny|ma|va|waw|kanagawa|` +
-  `lviv|mi|osaka|od|krakow|saitama|mil|ks|wroc|kr|il|pro|pe|seoul|cn|sc|police|aichi|rnu|med|msk|` +
-  `my|milano|chiba|pl|mk|biz|toscana|opole|md|coop|sumy|info|shizuoka|aeroport|rv|k12|cv|tx|` +
-  `kommune|ct|vn|ind)`);
-
+const listOfTlds = [
+  'com', 'co', 'gov', 'edu', 'ac', 'org', 'go', 'gob', 'or', 'net', 'in', 'ne', 'nic', 'gouv',
+  'web', 'spb', 'blog', 'jus', 'kiev', 'mil', 'wi', 'qc', 'ca', 'bel', 'on',
+];
 /**
  * There is fancy URL rewriting logic for the chrome://settings page that we need to work around.
  * Why? Special handling was added by Chrome team to allow a pushState transition between chrome:// pages.
@@ -101,16 +98,13 @@ class URLShim extends URL {
    * @return {string} tld
    */
   static getTld(hostname) {
-    const tld = hostname.split('.').slice(-1)[0];
+    const tlds = hostname.split('.').slice(-2);
 
-    const tldRegex = new RegExp(`${tldPlusOneRegex.source}\\.${tld}$`);
-    const tldMatch = hostname.match(tldRegex);
-
-    if (!tldMatch) {
-      return tld;
+    if (!listOfTlds.includes(tlds[0])) {
+      return `.${tlds[tlds.length - 1]}`;
     }
 
-    return `${tldMatch[1]}.${tld}`;
+    return `.${tlds.join('.')}`;
   }
 
   /**
@@ -137,8 +131,8 @@ class URLShim extends URL {
     const tldB = URLShim.getTld(urlBInfo.hostname);
 
     // get the string before the tld
-    const urlARootDomain = urlAInfo.hostname.replace(new RegExp(`\\.${tldA}$`), '').split('.').splice(-1)[0];
-    const urlBRootDomain = urlBInfo.hostname.replace(new RegExp(`\\.${tldB}$`), '').split('.').splice(-1)[0];
+    const urlARootDomain = urlAInfo.hostname.replace(new RegExp(`${tldA}$`), '').split('.').splice(-1)[0];
+    const urlBRootDomain = urlBInfo.hostname.replace(new RegExp(`${tldB}$`), '').split('.').splice(-1)[0];
 
     return urlARootDomain === urlBRootDomain;
   }
