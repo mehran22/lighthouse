@@ -25,6 +25,7 @@ class MultiCheckAudit extends Audit {
    * @return {LH.Audit.Product}
    */
   static createAuditProduct(result) {
+    /** @type {LH.Audit.MultiCheckAuditDetails} */
     const detailsItem = {
       ...result,
       ...result.manifestValues,
