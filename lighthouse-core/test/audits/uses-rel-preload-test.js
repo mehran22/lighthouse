@@ -166,6 +166,8 @@ describe('Performance: uses-rel-preload audit', () => {
       output => {
         assert.equal(output.rawValue, 1250);
         assert.equal(output.details.items.length, 2);
+        assert.equal(output.details.items[0].url, 'http://www.example.com/script-added.js');
+        assert.equal(output.details.items[1].url, 'http://sub.example.com/script-sub.js');
       }
     );
   });

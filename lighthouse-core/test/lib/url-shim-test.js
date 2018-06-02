@@ -93,7 +93,7 @@ describe('URL Shim', () => {
   });
 
   describe('getTld', () => {
-    it ('returns the correct tld', () => {
+    it('returns the correct tld', () => {
       assert.equal(URL.getTld('example.com'), '.com');
       assert.equal(URL.getTld('example.co.uk'), '.co.uk');
       assert.equal(URL.getTld('example.com.br'), '.com.br');
